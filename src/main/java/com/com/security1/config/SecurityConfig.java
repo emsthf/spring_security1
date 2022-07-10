@@ -1,5 +1,7 @@
 package com.com.security1.config;
 
+import com.com.security1.config.oauth.PrincipalOAuth2UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -8,10 +10,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+// 구글 로그인 완료 후 후처리
+// 1.코드 받기(인증), 2.엑세스 토큰(권한), 3.사용자 프로필 정보를 가져옴
+// 4.그 정보를 토대로 회원가입을 자동으로 진행(이메일, 전화번호, 아름, 아이디). 이 정보만 있다면 구글 정보만 있으면 가능
+// 4-1. 만약 쇼핑몰을 한다면 추가적으로 집 주소나 유저 등급이 필요할 수 있다. 이때는 추가적인 회원가입 정보를 받는 창이 필요
+
 @Configuration  // 빈 등록
 @EnableWebSecurity  // 스프링 시큐리티 필터가 스프링 필터체인에 등록이 된다.
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)  // Secured 어노테이션 활성화, preAuthorize/postAuthorize 어노테이션 활성화
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final PrincipalOAuth2UserService principalOAuth2UserService;
 
     @Bean  // 해당 메서드의 리턴되는 오브젝트를 IoC(제어의 역전)로 등록해준다.
     public BCryptPasswordEncoder encodePwd() {
@@ -34,6 +44,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")  // login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다. 그래서 컨트롤러에 /login을 만들지 않아도 된다
                 .defaultSuccessUrl("/")  // 기본 로그인 주소에서 로그인이 성공하면 메인 페이지로 이동시킴(/user 같은 페이지로 접근해서 로그인 했을 때에는 로그인 후 /user 페이지로 이동시킴)
                 .and().oauth2Login().loginPage("/loginForm")  // oauth 로그인을 원래 로그인 주소인 /loginForm으로 맵핑. 구글 로그인이 완료 뒤의 후처리가 필요함
+                // Tip. 코드를 받는게 아니라 엑세스 토큰 + 사용자 프로필 정보를 한번에 받는다.
+                .userInfoEndpoint().userService(principalOAuth2UserService).and()
                 .and().build();
     }
 
