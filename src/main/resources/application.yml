@@ -31,7 +31,7 @@ spring:
             scope:
               - email
               - profile
-
+글
           facebook:
             client-id: ???
             client-secret: ???
