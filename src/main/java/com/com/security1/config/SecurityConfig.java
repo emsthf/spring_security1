@@ -4,11 +4,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration  // 빈 등록
 @EnableWebSecurity  // 스프링 시큐리티 필터가 스프링 필터체인에 등록이 된다.
 public class SecurityConfig {
+
+    @Bean  // 해당 메서드의 리턴되는 오브젝트를 IoC(제어의 역전)로 등록해준다.
+    public BCryptPasswordEncoder encodePwd() {
+        return new BCryptPasswordEncoder();
+    }
 
     /**
      * Spring Security 5.7.x 부터 WebSecurityConfigurerAdapter 는 Deprecated.
@@ -22,7 +28,9 @@ public class SecurityConfig {
                 .antMatchers("/manager/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")  // 이런 주소로 오면 인증 + ADMIN or MANAGER 권한인지 검사
                 .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")  //이런 주소로 오면 인증 + ADMIN 권한인지 검사
                 .anyRequest().permitAll()  // 나머지 주소들은 권한을 모두 풀어준다
-                .and().formLogin().loginPage("/login")  // 모든 페이지를 설정한 로그인 페이지를 거쳐서 가도록 설정
+                .and().formLogin().loginPage("/loginForm")  // 모든 페이지를 설정한 로그인 페이지를 거쳐서 가도록 설정
+                .loginProcessingUrl("/login")  // login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다. 그래서 컨트롤러에 /login을 만들지 않아도 된다
+                .defaultSuccessUrl("/")  // 로그인이 성공하면 메인 페이지로 이동시킴
                 .and().build();
     }
 
