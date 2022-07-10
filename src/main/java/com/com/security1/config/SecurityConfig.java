@@ -24,13 +24,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         return http.authorizeRequests()
-                .antMatchers("/user/**").authenticated()  // 이런 주소로 들어오면 인증을 하겠다는 뜻
-                .antMatchers("/manager/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")  // 이런 주소로 오면 인증 + ADMIN or MANAGER 권한인지 검사
+                .antMatchers("/user/**").authenticated()  // 이런 주소로 들어오면 인증을 하겠다는 뜻. 인증만 되면 접속 가능
+                .antMatchers("/manager/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")  // 이런 주소로 오면 인증 + ADMIN or MANAGER 권한인지 인가 검사
                 .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")  //이런 주소로 오면 인증 + ADMIN 권한인지 검사
                 .anyRequest().permitAll()  // 나머지 주소들은 권한을 모두 풀어준다
                 .and().formLogin().loginPage("/loginForm")  // 모든 페이지를 설정한 로그인 페이지를 거쳐서 가도록 설정
                 .loginProcessingUrl("/login")  // login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다. 그래서 컨트롤러에 /login을 만들지 않아도 된다
-                .defaultSuccessUrl("/")  // 로그인이 성공하면 메인 페이지로 이동시킴
+                .defaultSuccessUrl("/")  // 기본 로그인 주소에서 로그인이 성공하면 메인 페이지로 이동시킴(/user 같은 페이지로 접근해서 로그인 했을 때에는 로그인 후 /user 페이지로 이동시킴)
                 .and().build();
     }
 
