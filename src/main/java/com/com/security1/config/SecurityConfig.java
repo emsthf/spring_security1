@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .and().formLogin().loginPage("/loginForm")  // 모든 페이지를 설정한 로그인 페이지를 거쳐서 가도록 설정
                 .loginProcessingUrl("/login")  // login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해준다. 그래서 컨트롤러에 /login을 만들지 않아도 된다
                 .defaultSuccessUrl("/")  // 기본 로그인 주소에서 로그인이 성공하면 메인 페이지로 이동시킴(/user 같은 페이지로 접근해서 로그인 했을 때에는 로그인 후 /user 페이지로 이동시킴)
+                .and().oauth2Login().loginPage("/loginForm")  // oauth 로그인을 원래 로그인 주소인 /loginForm으로 맵핑. 구글 로그인이 완료 뒤의 후처리가 필요함
                 .and().build();
     }
 

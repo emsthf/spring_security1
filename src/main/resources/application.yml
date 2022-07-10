@@ -26,12 +26,12 @@ spring:
       client:
         registration:
           google: # /oauth2/authorization/google 이 주소를 동작하게 한다.
-            client-id: ???
-            client-secret: ???
+            client-id: 699538009581-45m0e7gb15bjn3gdnvn738b780u211uq.apps.googleusercontent.com
+            client-secret: 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
             scope:
               - email
               - profile
-
+글
           facebook:
             client-id: ???
             client-secret: ???
